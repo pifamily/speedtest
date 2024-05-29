@@ -1,0 +1,26 @@
+---
+# tasks file for speedtest
+- name: Update
+  apt:
+    update_cache: true
+  become: true
+- name: Install packages
+  apt:
+    pkg:
+    - apt-transport-https
+    - gnupg1
+    - dirmngr
+    - lsb-release
+  become: true
+- name: Add key
+  shell:
+    cmd: curl -L https://packagecloud.io/ookla/speedtest-cli/gpgkey | gpg --dearmor | tee /usr/share/keyrings/speedtestcli-archive-keyring.gpg >/dev/null
+  become: true
+- name: Add repo
+  shell:
+    cmd: echo "deb [signed-by=/usr/share/keyrings/speedtestcli-archive-keyring.gpg] https://packagecloud.io/ookla/speedtest-cli/debian/ $(lsb_release -cs) main" | sudo tee  /etc/apt/sources.list.d/speedtest.list
+- name: Install
+  apt:
+    pkg: speedtest
+    update_cache: true
+  become: true
